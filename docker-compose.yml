@@ -1,0 +1,24 @@
+# # Create service for node
+
+version: "3.0"
+services:
+  node:  # service name
+    image: bhavin1099/nodereverseproxy  # image will created by docker compose
+    build:
+      context: ./node  # path of dockerfile for node
+      dockerfile: Dockerfile # dockerfile name in /node
+    container_name: ${SERVER_HOST}  # server_host is 8888 . container name will 8888
+    env_file: .env  # we use .env file to make use of environment variable stored in this .env file.
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}  # port mapping
+
+  nginx:
+    image: bhavin1099/nginxreverseproxynode
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: ${NGINX_PORT}
+    env_file: .env
+    ports:
+      - ${NGINX_PORT}:${NGINX_PORT}

@@ -1,0 +1,70 @@
+create default.conf.template file to use environment variable.
+Whenever nginx starts, it first look for .template file into directory of /etc/nginx/templates.
+
+And look for anything whatever writen in this .templates file.
+It will read .templates file and output of that environment variable into defult config file of /etc/nginx/conf.d
+
+Means by using templates file whatever you defined variable its values will be overwrite into default conf file in the path of /etc/nginx/conf.d
+
+This files output will be on path of /etc/nginx/
+
+
+server {
+    listen ${NGINX_PORT};  # Nginx port is 80
+    server_name ${NGINX_HOST}; # localhost
+    location / {
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_pass http://${SERVER_HOST}:${SERVER_PORT}; 
+        proxy_http_version 1.1;
+    }
+}
+
+## SERVER_PORT is port where node is running.
+## SERVER_HOST is address or domain where node is running.
+
+Create Dockerfile for nginx
+
+FROM nginx:1.18.0-alpine
+WORKDIR /etc/nginx/templates
+COPY default.conf.template /etc/nginx/templates/default.conf.template
+
+##################################################
+Create docker compose file at root directory.
+
+# Create service for node
+
+version: "3.0"
+services:
+  node:
+    image: bhavin1099/nodereverseproxy
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: ${SERVER_HOST}
+    env_file: .env
+    ports:
+      - ${SERVER_PORT}:${SERVER_PORT}
+
+  nginx:
+    image: bhavin1099/nginxreverseproxynode
+    restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: ${NGINX_PORT}
+    env_file: .env
+    ports:
+      - ${NGINX_PORT}:${NGINX_PORT}
+
+## We will create .ENV file
+SERVER_PORT=3001
+SERVER_HOST=node-c
+NGINX_PORT=81
+NGINX_HOST=nginx-c
+
+
+
+
+

@@ -1,0 +1,35 @@
+npm init es6 -y # create package.json
+ADD LINE IN Package.json TO TRIGGER NODE APP BY NODEJS 
+
+  "scripts": {
+      "start": "node ./src/index.js"
+    
+  },
+
+
+npm i express -- install express as npm install express
+
+COPY INDEX.JS CODE
+#################################
+import express from "express";
+const app = express();
+
+app.get('', (req, res) => {
+    const headers = req.headers;
+    res.status(200).send(headers);
+});
+
+app.listen(process.env.SERVER_PORT, () => {
+    console.log('Express listening on port ${process.env.SERVER_PORT}');
+});
+##################################
+
+#Create src folder
+Move index.js file into src folder
+
+###################################
+Create Nginx ans setup for ReverseProxy
+###################################
+
+Create folder nginx
+
